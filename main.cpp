@@ -7,11 +7,28 @@
 #include "camera.h"
 #include "math.h"
 
-vec3 color(const ray& r, hitable *world) {
-	hit_record rec;
+double myrand()
+{
+	return ((double) rand() / (RAND_MAX));
+}
 
-	if (world->hit(r, 0.0, MAXFLOAT, rec)) {
-		return 0.5*vec3(rec.normal.x()+1, rec.normal.y()+1, rec.normal.z() + 1);
+vec3 random_in_unit_sphere() {
+	vec3 p;
+	do {
+		p = 2.0*vec3(myrand(), myrand(), myrand()) - vec3(1, 1, 1);
+	} while (p.squared_length() >= 1.0);
+	return p;
+}
+
+vec3 color(const ray& r, hitable *world) {
+	hit_record rec = {0};
+	rec.t = 0;
+	rec.p = vec3(0, 0, 0);
+	rec.normal = vec3(0, 0, 0);
+
+	if (world->hit(r, 0.001, MAXFLOAT, rec)) {
+		vec3 target = rec.p + rec.normal + random_in_unit_sphere();
+		return 0.37*color(ray(rec.p, target - rec.p), world);
 	}
 
 	vec3 unit_direction = unit_vector(r.direction());
@@ -37,14 +54,15 @@ int main() {
 		for (int i = 0; i < nx; i++) {
 			vec3 col(0, 0, 0);
 			for (int s = 0; s < ns; s++) {
-				double r1 = fmin(drand48(), 0.9) - 0.5;
-				double r2 = fmin(drand48(), 0.9) - 0.5;
+				double r1 = fmin(myrand(), 0.9) - 0.5;
+				double r2 = fmin(myrand(), 0.9) - 0.5;
 				float u = float(i - r1) / float(nx);
 				float v = float(j - r2) / float(ny);
 				ray r = cam.get_ray(u, v);
 				col += color(r, world);
 			}
 			col /= float(ns);
+			col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
 			int ir = int(255.99 * col[0]);
 			int ig = int(255.99 * col[1]);
 			int ib = int(255.99 * col[2]);
