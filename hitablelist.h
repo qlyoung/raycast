@@ -21,7 +21,7 @@ class hitable_list: public hitable {
 bool hitable_list::hit(const ray &r, float t_min, float t_max, hit_record &rec) const {
 	hit_record temp_rec;
 	double closest_so_far = t_max;
-	bool hit_anything;
+	bool hit_anything = false;
 
 	for (int i = 0; i < list_size; i++) {
 		if (list[i]->hit(r, t_min, closest_so_far, temp_rec)) {
