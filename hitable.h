@@ -3,6 +3,8 @@
 
 #include "ray.h"
 
+class material;
+
 struct hit_record {
 	/* Ray parameter at which hit occurs */
 	float t;
@@ -10,6 +12,8 @@ struct hit_record {
 	vec3 p;
 	/* Normal of hit surface */
 	vec3 normal;
+
+	material *mat_ptr;
 };
 
 class hitable {
